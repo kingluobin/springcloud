@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.11.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>com.jiaxing</groupId>
+    <artifactId>eureka</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>eureka</name>
+    <description>Demo project for Spring Boot</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <spring-cloud.version>Greenwich.SR4</spring-cloud.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>1.1.1</version>
+                <configuration>
+                    <!-- 推送到指定的仓库 -->
+                    <registryUrl>localregistry:5000</registryUrl>
+                    <!-- 开启docker远程API的端口
+                    <dockerHost>http://localregistry:2375</dockerHost>-->
+                    <!-- 指定镜像名称 格式：仓库域名：端口/镜像名字：镜像的版本号 -->
+                    <imageName>localregistry:5000/${project.artifactId}:${project.version}</imageName>
+                    <!-- 指定基础镜像 类似dockerfile的FROM指令 -->
+                    <baseImage>java:8</baseImage>
+                    <!-- 配置容器启动后，执行什么命令，等于与 dockerfile的ENTRYPOINT -->
+                    <entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
+                    <!-- 为dockerde tag指定版本号、latest -->
+                    <imageTags>
+                        <imageTag>${project.version}</imageTag>
+                    <!-- <imageTag>latest</imageTag>-->
+                </imageTags>
+                <!-- 是否有push的功能 true代表有 -->
+                    <pushImage>true</pushImage>
+                    <!-- push后是否覆盖已存在的标签镜像 -->
+                    <forceTags>true</forceTags>
+                    <!-- 复制jar包到docker容器指定的目录 -->
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <!-- 指定要复制jar包的根目录，${project.build.directory}代表 target的目录 -->
+                            <directory>${project.build.directory}</directory>
+                            <!-- 指定要复制的文件，${project.build.finalName}代表打包后的jar -->
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

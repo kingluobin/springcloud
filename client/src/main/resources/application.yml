@@ -1,0 +1,13 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka/
+# 跳转域名
+#  instance:
+#    hostname: clientName
+server:
+  port: 8888
+
+spring:
+  application:
+    name: client
